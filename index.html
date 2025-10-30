@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>나의 일기 블로그</title>
+  <style>
+    body {
+      font-family: "Noto Sans KR", sans-serif;
+      background-color: #fafafa;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #ffb6c1;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 1.6em;
+      letter-spacing: 1px;
+    }
+
+    main {
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"], textarea {
+      font-family: inherit;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      background-color: #ff91a4;
+      color: white;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff708e;
+    }
+
+    .post {
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+      margin-top: 15px;
+    }
+
+    .post h3 {
+      margin: 0 0 5px 0;
+    }
+
+    .date {
+      font-size: 0.8em;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+  </style>
+</head>
+<body>
+  <header>🌷 나의 하루 블로그 🌷</header>
+  <main>
+    <form id="diaryForm">
+      <input type="text" id="title" placeholder="오늘의 제목을 입력하세요" required />
+      <textarea id="content" rows="5" placeholder="오늘의 이야기를 적어보세요" required></textarea>
+      <button type="submit">기록하기</button>
+    </form>
+
+    <section id="posts"></section>
+  </main>
+
+  <script>
+    const form = document.getElementById("diaryForm");
+    const postsSection = document.getElementById("posts");
+
+    // 저장된 게시글 불러오기
+    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
+    savedPosts.forEach(addPostToPage);
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+
+      if (title && content) {
+        const post = {
+          title,
+          content,
+          date: new Date().toLocaleString()
+        };
+
+        addPostToPage(post);
+        savedPosts.unshift(post); // 최신순 정렬
+        localStorage.setItem("posts", JSON.stringify(savedPosts));
+
+        form.reset();
+      }
+    });
+
+    function addPostToPage(post) {
+      const postDiv = document.createElement("div");
+      postDiv.classList.add("post");
+
+      postDiv.innerHTML = `
+        <h3>${post.title}</h3>
+        <div class="date">${post.date}</div>
+        <p>${post.content.replace(/\n/g, "<br>")}</p>
+      `;
+
+      postsSection.prepend(postDiv);
+    }
+  </script>
+</body>
+</html>
